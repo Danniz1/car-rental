@@ -33,18 +33,19 @@ bool adminLogin() {
     return false;
 }
 
-
 void registerUser() {
     ofstream file("usersDB.txt", ios::app); // append mode
 
     string username, password;
+    int initialDeposit;
     cout << "\n--- Register New User ---" << endl;
     cout << "Enter new username: ";
     cin >> username;
     cout << "Enter new password: ";
     cin >> password;
+    cout << "Enter initial deposit amount for user: ";
+    cin >> initialDeposit;
 
-    int initialDeposit = 10500;
     string borrowRequest = "none";
     string returnRequest = "none";
 
@@ -54,7 +55,6 @@ void registerUser() {
 
     cout << "User registered successfully with deposit of " << initialDeposit << " shillings.\n";
 }
-
 bool userLogin(string &usernameOut) {
     string username, password;
     string storedUser, storedPass;
