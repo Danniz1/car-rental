@@ -170,8 +170,6 @@ void requestCar(string username) {
         cout << "Request not successful.\n";
     }
 }
-
-
 void approveBorrowRequests() {
     ifstream userFile("usersDB.txt");
     ofstream tempUser("temp_users.txt");
@@ -193,39 +191,39 @@ void approveBorrowRequests() {
     }
     carFile.close();
 
-    // Read users and process borrow requests
+    // Process borrow requests
     while (userFile >> user >> pass >> balance >> borrowReq >> returnReq) {
         if (borrowReq != "none") {
-            // Check if car is available
             bool carFound = false;
+
             for (int i = 0; i < carCount; i++) {
                 if (brand[i] == borrowReq) {
                     carFound = true;
                     if (stock[i] > 0) {
-                        stock[i]--; // reduce stock
-                        borrowReq = "none";
+                        stock[i]--;  // reduce car stock
                         changeMade = true;
-                        cout << "Approved: " << user << " has borrowed " << brand[i] << endl;
+                        cout << " Approved: " << user << " has borrowed " << brand[i] << endl;
                     } else {
-                        cout << "Car not available for " << user << ": " << brand[i] << " is out of stock.\n";
+                        cout << " Cannot approve: " << brand[i] << " is out of stock for " << user << endl;
                     }
                     break;
                 }
             }
+
             if (!carFound) {
-                cout << "Car brand '" << borrowReq << "' not found in database.\n";
+                cout << " Car brand '" << borrowReq << "' not found in car database.\n";
             }
         }
 
-        // Save updated user data
-        tempUser << user << " " << pass << " " << balance << " " << borrowReq << " " << returnReq << endl;
+        // Save unchanged or updated user data
+        tempUser << user << " " << pass << " " << balance << " "
+                 << borrowReq << " " << returnReq << endl;
     }
 
     userFile.close();
     tempUser.close();
     remove("usersDB.txt");
     rename("temp_users.txt", "usersDB.txt");
-
     // Save updated car stock
     if (changeMade) {
         ofstream newCarFile("carsDB.txt");
@@ -234,17 +232,14 @@ void approveBorrowRequests() {
         }
         newCarFile.close();
     }
-
     cout << "Done processing borrow requests.\n";
 }
 void requestReturn(string username) {
     ifstream userFile("usersDB.txt");
     ofstream tempFile("temp.txt");
-
     string user, pass, borrowReq, returnReq;
     int balance;
     bool found = false;
-
     while (userFile >> user >> pass >> balance >> borrowReq >> returnReq) {
         if (user == username) {
             found = true;
