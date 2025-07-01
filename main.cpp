@@ -37,24 +37,32 @@ void registerUser() {
     ofstream file("usersDB.txt", ios::app); // append mode
 
     string username, password;
-    int initialDeposit;
+    int deposit;
+
     cout << "\n--- Register New User ---" << endl;
     cout << "Enter new username: ";
     cin >> username;
     cout << "Enter new password: ";
     cin >> password;
-    cout << "Enter initial deposit amount for user: ";
-    cin >> initialDeposit;
+
+    // Prompt for deposit
+    while (true) {
+        cout << "Enter deposit amount (minimum 10500): ";
+        cin >> deposit;
+        if (deposit >= 10500) break;
+        cout << "Deposit too low. Must deposit at least 10500.\n";
+    }
 
     string borrowRequest = "none";
     string returnRequest = "none";
 
     // Save user to file
-    file << username << " " << password << " " << initialDeposit << " "
+    file << username << " " << password << " " << deposit << " "
          << borrowRequest << " " << returnRequest << endl;
 
-    cout << "User registered successfully with deposit of " << initialDeposit << " shillings.\n";
+    cout << "User registered successfully with deposit of " << deposit << " shillings.\n";
 }
+
 bool userLogin(string &usernameOut) {
     string username, password;
     string storedUser, storedPass;
