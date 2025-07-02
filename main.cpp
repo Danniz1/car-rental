@@ -455,8 +455,8 @@ int main() {
 
                     switch (userChoice) {
                         case 1: viewProfile(loggedUser); break;
-                        case 2: registerUser(); break;
-                        case 3: requestCar(loggedUser); break;
+                        case 3: requestReturn(loggedUser); break;
+                        case 2: requestCar(loggedUser); break;
                         case 4: requestReturn(loggedUser); break;
                         case 5: changeUserPassword(loggedUser); break;
                         case 6: cout << "Logging out...\n"; break;
