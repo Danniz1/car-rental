@@ -33,34 +33,26 @@ bool adminLogin() {
     return false;
 }
 
+
 void registerUser() {
-    ofstream file("usersDB.txt", ios::app); // append mode
+    ofstream file("usersDB.txt", ios::app); 
 
     string username, password;
-    int deposit;
-
     cout << "\n--- Register New User ---" << endl;
     cout << "Enter new username: ";
     cin >> username;
     cout << "Enter new password: ";
     cin >> password;
 
-    // Prompt for deposit
-    while (true) {
-        cout << "Enter deposit amount (minimum 10500): ";
-        cin >> deposit;
-        if (deposit >= 10500) break;
-        cout << "Deposit too low. Must deposit at least 10500.\n";
-    }
-
+    int initialDeposit = 10500;
     string borrowRequest = "none";
     string returnRequest = "none";
 
-    // Save user to file
-    file << username << " " << password << " " << deposit << " "
+    
+    file << username << " " << password << " " << initialDeposit << " "
          << borrowRequest << " " << returnRequest << endl;
 
-    cout << "User registered successfully with deposit of " << deposit << " shillings.\n";
+    cout << "User registered successfully with deposit of " << initialDeposit << " shillings.\n";
 }
 
 bool userLogin(string &usernameOut) {
@@ -142,7 +134,7 @@ void requestCar(string username) {
         return;
     }
 
-    // Now check and update user record
+    
     ifstream userFile("usersDB.txt");
     ofstream tempFile("temp.txt");
 
@@ -178,6 +170,8 @@ void requestCar(string username) {
         cout << "Request not successful.\n";
     }
 }
+
+
 void approveBorrowRequests() {
     ifstream userFile("usersDB.txt");
     ofstream tempUser("temp_users.txt");
@@ -186,53 +180,53 @@ void approveBorrowRequests() {
     int balance;
     bool changeMade = false;
 
-    // Load cars into arrays
+    
     const int MAX_CARS = 50;
     string brand[MAX_CARS];
     int stock[MAX_CARS];
     int carCount = 0;
 
-    // Read carsDB.txt
+    
     ifstream carFile("carsDB.txt");
     while (carFile >> brand[carCount] >> stock[carCount]) {
         carCount++;
     }
     carFile.close();
 
-    // Process borrow requests
+    
     while (userFile >> user >> pass >> balance >> borrowReq >> returnReq) {
         if (borrowReq != "none") {
+            
             bool carFound = false;
-
             for (int i = 0; i < carCount; i++) {
                 if (brand[i] == borrowReq) {
                     carFound = true;
                     if (stock[i] > 0) {
-                        stock[i]--;  // reduce car stock
+                        stock[i]--; 
+                        borrowReq = "none";
                         changeMade = true;
-                        cout << " Approved: " << user << " has borrowed " << brand[i] << endl;
+                        cout << "Approved: " << user << " has borrowed " << brand[i] << endl;
                     } else {
-                        cout << " Cannot approve: " << brand[i] << " is out of stock for " << user << endl;
+                        cout << "Car not available for " << user << ": " << brand[i] << " is out of stock.\n";
                     }
                     break;
                 }
             }
-
             if (!carFound) {
-                cout << " Car brand '" << borrowReq << "' not found in car database.\n";
+                cout << "Car brand '" << borrowReq << "' not found in database.\n";
             }
         }
 
-        // Save unchanged or updated user data
-        tempUser << user << " " << pass << " " << balance << " "
-                 << borrowReq << " " << returnReq << endl;
+        
+        tempUser << user << " " << pass << " " << balance << " " << borrowReq << " " << returnReq << endl;
     }
 
     userFile.close();
     tempUser.close();
     remove("usersDB.txt");
     rename("temp_users.txt", "usersDB.txt");
-    // Save updated car stock
+
+    
     if (changeMade) {
         ofstream newCarFile("carsDB.txt");
         for (int i = 0; i < carCount; i++) {
@@ -240,14 +234,17 @@ void approveBorrowRequests() {
         }
         newCarFile.close();
     }
+
     cout << "Done processing borrow requests.\n";
 }
 void requestReturn(string username) {
     ifstream userFile("usersDB.txt");
     ofstream tempFile("temp.txt");
+
     string user, pass, borrowReq, returnReq;
     int balance;
     bool found = false;
+
     while (userFile >> user >> pass >> balance >> borrowReq >> returnReq) {
         if (user == username) {
             found = true;
@@ -285,7 +282,7 @@ void approveReturnRequests() {
     int balance;
     bool changeMade = false;
 
-    // Load car stock
+    
     const int MAX_CARS = 50;
     string brand[MAX_CARS];
     int stock[MAX_CARS];
@@ -297,14 +294,14 @@ void approveReturnRequests() {
     }
     carFile.close();
 
-    // Process each user's return request
+    
     while (userFile >> user >> pass >> balance >> borrowReq >> returnReq) {
         if (returnReq != "none") {
             bool carFound = false;
 
             for (int i = 0; i < carCount; i++) {
                 if (brand[i] == returnReq) {
-                    stock[i]++; // increase car stock
+                    stock[i]++; 
                     borrowReq = "none";
                     returnReq = "none";
                     changeMade = true;
@@ -411,17 +408,18 @@ int main() {
         cout << "\n========== CAR RENTAL SYSTEM ==========\n";
         cout << "1. Admin Login\n";
         cout << "2. User Login\n";
-        cout << "3. Exit\n";
+        cout<<"3. User Signup\n";
+        cout << "4. Exit\n";
         cout << "Choose an option: ";
         cin >> mainChoice;
 
         if (mainChoice == 1) {
             if (adminLogin()) {
-                // Admin Menu Loop
+                
                 int adminChoice;
                 do {
                     cout << "\n--- ADMIN MENU ---\n";
-                    cout << "1. Register User\n";
+                    // cout << "1. Register User\n";
                     cout << "2. Approve Borrow Requests\n";
                     cout << "3. Approve Return Requests\n";
                     cout << "4. Change Admin Password\n";
@@ -430,7 +428,7 @@ int main() {
                     cin >> adminChoice;
 
                     switch (adminChoice) {
-                        case 1: registerUser(); break;
+                        // case 1: registerUser(); break;
                         case 2: approveBorrowRequests(); break;
                         case 3: approveReturnRequests(); break;
                         case 4: changeAdminPassword(); break;
@@ -443,7 +441,7 @@ int main() {
         } else if (mainChoice == 2) {
             string loggedUser;
             if (userLogin(loggedUser)) {
-                // User Menu Loop
+                
                 int userChoice;
                 do {
                     cout << "\n--- USER MENU ---\n";
@@ -457,20 +455,24 @@ int main() {
 
                     switch (userChoice) {
                         case 1: viewProfile(loggedUser); break;
-                        case 2: requestCar(loggedUser); break;
-                        case 3: requestReturn(loggedUser); break;
-                        case 4: changeUserPassword(loggedUser); break;
-                        case 5: cout << "Logging out...\n"; break;
+                        case 2: registerUser(); break;
+                        case 3: requestCar(loggedUser); break;
+                        case 4: requestReturn(loggedUser); break;
+                        case 5: changeUserPassword(loggedUser); break;
+                        case 6: cout << "Logging out...\n"; break;
                         default: cout << "Invalid choice.\n"; break;
                     }
                 } while (userChoice != 5);
             }
 
-        } else if (mainChoice == 3) {
+        } else if (mainChoice == 4) {
             cout << "Exiting the system. Goodbye!\n";
             break;
-        } else {
-            cout << "Invalid choice. Please enter 1, 2, or 3.\n";
+        } else if(mainChoice==3){
+            registerUser();
+        }
+        else {
+            cout << "Invalid choice. Please enter 1, 2,3, 4\n";
         }
     }
 
